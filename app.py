@@ -3,13 +3,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime, timezone, timedelta
 import requests
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'strive_v9_pro'
+app.config['SECRET_KEY'] = 'strive_v10_final'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///strive.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-NINJA_API_KEY = 'leUU4Ev+HdzK9FttH+zoqw==APuke9X3X0HHqY9k'
+NINJA_API_KEY = os.environ.get('NINJA_API_KEY', 'leUU4Ev+HdzK9FttH+zoqw==APuke9X3X0HHqY9k')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -167,5 +169,7 @@ def signup():
 def logout(): logout_user(); return redirect(url_for("login"))
 
 if __name__ == "__main__":
-    with app.app_context(): db.create_all()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    with app.app_context():
+        db.create_all()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
