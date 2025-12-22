@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'strive_v10_final'
+# This tells SQLite to create the file in the current folder
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///strive.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -53,6 +54,11 @@ class Cheer(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+# --- DATABASE INITIALIZATION ---
+# This runs before the first request to ensure tables exist
+with app.app_context():
+    db.create_all()
 
 # --- ROUTES ---
 @app.route("/")
@@ -155,21 +161,31 @@ def cheer(log_id):
 def login():
     if request.method == "POST":
         u = User.query.filter_by(username=request.form.get("username")).first()
-        if u and u.password == request.form.get("password"): login_user(u); return redirect(url_for("home"))
+        if u and u.password == request.form.get("password"):
+            login_user(u)
+            return redirect(url_for("home"))
+        flash("Invalid username or password")
     return render_template("login.html")
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
+        existing_user = User.query.filter_by(username=request.form.get("username")).first()
+        if existing_user:
+            flash("Username already exists")
+            return redirect(url_for("signup"))
         u = User(username=request.form.get("username"), password=request.form.get("password"))
-        db.session.add(u); db.session.commit(); login_user(u); return redirect(url_for("home"))
+        db.session.add(u)
+        db.session.commit()
+        login_user(u)
+        return redirect(url_for("home"))
     return render_template("signup.html")
 
 @app.route("/logout")
-def logout(): logout_user(); return redirect(url_for("login"))
+def logout():
+    logout_user()
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
