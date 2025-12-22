@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STRIVE</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1e293b;
+        --primary: #3b82f6;
+        --border: #e2e8f0;
+        --nav: #0f172a;
+      }
+      body.dark-mode {
+        --bg: #020617;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --border: #334155;
+        --nav: #000000;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: sans-serif;
+        transition: 0.3s;
+        margin: 0;
+        padding-bottom: 50px;
+      }
+      .navbar {
+        background: var(--nav);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 15px;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 15px;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        color: var(--text);
+        box-sizing: border-box;
+      }
+      .btn-p {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        width: 100%;
+      }
+      .water-btn {
+        background: #0ea5e9;
+        color: white;
+        border-radius: 8px;
+        padding: 8px 12px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .template-btn {
+        background: var(--card);
+        border: 1px solid var(--border);
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        text-align: left;
+        width: 100%;
+        color: var(--text);
+      }
+      .food-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .stat-label {
+        font-size: 0.7rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <strong>STRIVE</strong>
+      <div style="display: flex; gap: 15px">
+        <button
+          onclick="toggleTheme()"
+          style="
+            background: none;
+            border: none;
+            color: #f59e0b;
+            cursor: pointer;
+          "
+        >
+          <i class="fas fa-moon" id="t-icon"></i>
+        </button>
+        <a href="/leaderboard" style="color: white; text-decoration: none"
+          ><i class="fas fa-users"></i
+        ></a>
+        <a href="/history" style="color: white; text-decoration: none"
+          ><i class="fas fa-calendar-alt"></i
+        ></a>
+        <a href="/logout" style="color: #ef4444; text-decoration: none"
+          ><i class="fas fa-sign-out-alt"></i
+        ></a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="card">
+        <h3>Diet Templates</h3>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+          "
+        >
+          {% for t in templates %}
+          <form action="/add_food" method="POST">
+            <input type="hidden" name="template_id" value="{{ t.id }}" />
+            <button type="submit" class="template-btn">
+              <strong>{{ t.name }}</strong><br /><small
+                >{{ t.calories }} cal | {{ t.protein }}g</small
+              >
+            </button>
+          </form>
+          {% endfor %}
+        </div>
+        <details>
+          <summary
+            style="cursor: pointer; color: var(--primary); font-weight: bold"
+          >
+            + Create Custom
+          </summary>
+          <form action="/save_template" method="POST" style="margin-top: 10px">
+            <input
+              type="text"
+              name="t_name"
+              placeholder="Meal Name (API query if empty cal)"
+              required
+            />
+            <div style="display: flex; gap: 5px">
+              <input type="number" name="t_cal" placeholder="Cal" /><input
+                type="number"
+                name="t_pro"
+                placeholder="Pro"
+              />
+            </div>
+            <button type="submit" class="btn-p" style="background: #10b981">
+              Save Template
+            </button>
+          </form>
+        </details>
+      </div>
+
+      <div class="card">
+        <h3>Daily Log 🥗</h3>
+        <form action="/add_food" method="POST" style="display: flex; gap: 5px">
+          <input
+            type="text"
+            name="name"
+            placeholder="e.g. 2 eggs"
+            required
+            style="flex: 3"
+          />
+          <button type="submit" class="btn-p" style="flex: 1">Add</button>
+        </form>
+        <div style="margin-top: 10px">
+          {% for item in food_log %}
+          <div class="food-item">
+            <span style="flex: 2">{{ item.n }}</span>
+            <span style="flex: 1; text-align: right"
+              ><strong>{{ item.c }}</strong>c |
+              <strong>{{ item.p }}</strong>g</span
+            >
+            <a
+              href="/delete_food/{{ loop.index0 }}"
+              style="color: #ef4444; margin-left: 10px"
+              ><i class="fas fa-trash-alt"></i
+            ></a>
+          </div>
+          {% endfor %}
+        </div>
+        <div
+          style="
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 2px solid var(--primary);
+            padding-top: 10px;
+          "
+        >
+          <div>
+            <span class="stat-label">Cals</span><br /><strong
+              >{{ totals.cal }}</strong
+            >
+          </div>
+          <div>
+            <span class="stat-label">Protein</span><br /><strong
+              >{{ totals.pro }}g</strong
+            >
+          </div>
+        </div>
+      </div>
+
+      <form action="/finish_day" method="POST">
+        <div class="card" style="text-align: center">
+          <span class="stat-label">Water (Liters)</span>
+          <div
+            style="
+              font-size: 2rem;
+              font-weight: 900;
+              color: #0ea5e9;
+              margin: 5px 0;
+            "
+          >
+            <span id="w-display">0.0</span> L
+          </div>
+          <div style="display: flex; justify-content: center; gap: 8px">
+            <button type="button" class="water-btn" onclick="addWater(0.25)">
+              +0.25L
+            </button>
+            <button type="button" class="water-btn" onclick="addWater(0.5)">
+              +0.5L
+            </button>
+            <button
+              type="button"
+              class="water-btn"
+              style="background: #ef4444"
+              onclick="resetWater()"
+            >
+              Reset
+            </button>
+          </div>
+          <input
+            type="hidden"
+            name="final_water"
+            id="hidden-water"
+            value="0.0"
+          />
+        </div>
+        <div class="card">
+          <label class="stat-label">Steps</label
+          ><input type="number" name="steps" placeholder="0" />
+          <label class="stat-label">Workout</label
+          ><input type="text" name="workout" placeholder="Session Name" />
+          <div
+            style="
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 15px;
+              margin-top: 10px;
+            "
+          >
+            <div>
+              <label class="stat-label">Intensity: <span id="iv">5</span></label
+              ><input
+                type="range"
+                name="intensity"
+                min="1"
+                max="10"
+                oninput="document.getElementById('iv').innerText=this.value"
+              />
+            </div>
+            <div>
+              <label class="stat-label">Sleep: <span id="sv">7.5</span>h</label
+              ><input
+                type="range"
+                name="sleep"
+                min="0"
+                max="12"
+                step="0.5"
+                value="7.5"
+                oninput="document.getElementById('sv').innerText=this.value"
+              />
+            </div>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="btn-p"
+          style="background: #10b981; padding: 20px; font-size: 1.1rem"
+        >
+          COMPLETE & POST
+        </button>
+      </form>
+    </div>
+    <script>
+      function toggleTheme() {
+        document.body.classList.toggle("dark-mode");
+        const isD = document.body.classList.contains("dark-mode");
+        localStorage.setItem("theme", isD ? "dark" : "light");
+        document.getElementById("t-icon").className = isD
+          ? "fas fa-sun"
+          : "fas fa-moon";
+      }
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("t-icon").className = "fas fa-sun";
+      }
+      let water = 0.0;
+      function addWater(amt) {
+        water = parseFloat((water + amt).toFixed(2));
+        document.getElementById("w-display").innerText = water;
+        document.getElementById("hidden-water").value = water;
+      }
+      function resetWater() {
+        water = 0.0;
+        document.getElementById("w-display").innerText = "0.0";
+        document.getElementById("hidden-water").value = "0.0";
+      }
+    </script>
+  </body>
+</html>

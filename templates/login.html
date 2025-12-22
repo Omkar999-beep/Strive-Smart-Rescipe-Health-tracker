@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STRIVE | Login</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --dark: #0f172a;
+        --bg: #f1f5f9;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+      }
+      .subtitle {
+        color: #64748b;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+
+      .input-group {
+        text-align: left;
+        margin-bottom: 1.2rem;
+      }
+      .input-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 5px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: 0.3s;
+      }
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: 0.3s;
+      }
+      .btn:hover {
+        background: #2563eb;
+        transform: translateY(-1px);
+      }
+
+      .footer-link {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+      .footer-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div class="logo">STRIVE</div>
+      <div class="subtitle">Welcome back! Please enter your details.</div>
+
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <label>USERNAME</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>PASSWORD</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+        <button type="submit" class="btn">Sign In</button>
+      </form>
+
+      <div class="footer-link">
+        Don't have an account? <a href="/signup">Create one for free</a>
+      </div>
+    </div>
+  </body>
+</html>

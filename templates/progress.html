@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>STRIVE | Progress</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --dark: #0f172a;
+        --bg: #f8fafc;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        margin: 0;
+      }
+      .navbar {
+        background: var(--dark);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .card {
+        background: white;
+        padding: 2rem;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div style="color: white; font-size: 1.5rem; font-weight: 900">
+        STRIVE
+      </div>
+      <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/history">History</a>
+        <a href="/progress" style="color: white">Progress</a>
+        <a href="/logout" style="color: #ef4444">Logout</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="card">
+        <h2>
+          <i class="fa-solid fa-chart-line" style="color: var(--primary)"></i>
+          Performance Trends
+        </h2>
+        <p style="color: #64748b">
+          Visualize your weight loss vs. workout intensity over time.
+        </p>
+        <canvas id="bigChart" height="150"></canvas>
+      </div>
+    </div>
+
+    <script>
+      const ctx = document.getElementById('bigChart').getContext('2d');
+      new Chart(ctx, {
+          type: 'line',
+          data: {
+              labels: [{% for log in logs %}"{{ log.date.strftime('%b %d') }}"{% if not loop.last %},{% endif %}{% endfor %}],
+              datasets: [{
+                  label: 'Weight (kg)',
+                  data: [{% for log in logs %}{{ log.weight }}{% if not loop.last %},{% endif %}{% endfor %}],
+                  borderColor: '#3b82f6',
+                  yAxisID: 'y',
+                  tension: 0.3
+              }, {
+                  label: 'Intensity (1-10)',
+                  data: [{% for log in logs %}{{ log.intensity }}{% if not loop.last %},{% endif %}{% endfor %}],
+                  borderColor: '#10b981',
+                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                  fill: true,
+                  yAxisID: 'y1',
+                  tension: 0.3
+              }]
+          },
+          options: {
+              scales: {
+                  y: { type: 'linear', position: 'left', title: { display: true, text: 'Weight' } },
+                  y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Intensity' } }
+              }
+          }
+      });
+    </script>
+  </body>
+</html>

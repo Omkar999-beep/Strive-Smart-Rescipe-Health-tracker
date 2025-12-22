@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Strive Feed</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1e293b;
+        --border: #e2e8f0;
+        --primary: #3b82f6;
+      }
+      body.dark-mode {
+        --bg: #020617;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --border: #334155;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .navbar {
+        background: #0f172a;
+        padding: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .container {
+        max-width: 500px;
+        margin: auto;
+        padding: 15px;
+      }
+      .post {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 15px;
+        margin-bottom: 15px;
+      }
+      .badge {
+        background: #eff6ff;
+        color: #1d4ed8;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: bold;
+      }
+      .winner-card {
+        background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+        border: none;
+        text-align: center;
+        color: #422006;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.3);
+      }
+      .cheer-btn {
+        background: #fff1f2;
+        color: #e11d48;
+        border: 1px solid #fda4af;
+        padding: 8px 16px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="/" style="color: white"><i class="fas fa-arrow-left"></i></a
+      ><strong>Feed</strong>
+    </nav>
+    <div class="container">
+      {% if winner %}
+      <div class="winner-card">
+        <i
+          class="fas fa-crown"
+          style="font-size: 2rem; margin-bottom: 10px"
+        ></i>
+        <h2 style="margin: 0">Weekly Champion</h2>
+        <p style="font-weight: bold; font-size: 1.2rem; margin: 5px 0">
+          @{{ winner.name }}
+        </p>
+        <div
+          style="
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+          "
+        >
+          Score: {{ winner.score }} pts
+        </div>
+      </div>
+      {% endif %} {% for log in logs %}
+      <div class="post">
+        <div style="display: flex; justify-content: space-between">
+          <strong>@{{ log.author.username }}</strong>
+          <small style="color: #64748b">{{ log.date.strftime('%H:%M') }}</small>
+        </div>
+        <h3 style="margin: 10px 0">💪 {{ log.workout }}</h3>
+        <div
+          style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px"
+        >
+          <span class="badge">🔥 {{ log.calories }} c</span>
+          <span class="badge">🍗 {{ log.protein }}g</span>
+          <span class="badge">👟 {{ log.steps }}</span>
+          <span class="badge">💧 {{ log.water }}L</span>
+        </div>
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <form action="/cheer/{{ log.id }}" method="POST">
+            <button class="cheer-btn">❤️ {{ log.cheers|length }}</button>
+          </form>
+          <span style="font-size: 0.8rem; color: #94a3b8"
+            >{{ log.intensity }}/10</span
+          >
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <script>
+      if (localStorage.getItem("theme") === "dark")
+        document.body.classList.add("dark-mode");
+    </script>
+  </body>
+</html>

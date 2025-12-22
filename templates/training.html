@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>STRIVE | Training Lab</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --dark: #0f172a;
+        --bg: #f8fafc;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        margin: 0;
+      }
+      .navbar {
+        background: var(--dark);
+        padding: 1rem 5%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .nav-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        margin-left: 20px;
+        font-weight: 600;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .workout-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+      .card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+      }
+      .exercise-list {
+        list-style: none;
+        padding: 0;
+        margin-top: 1rem;
+      }
+      .exercise-list li {
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div style="color: white; font-size: 1.5rem; font-weight: 900">
+        STRIVE
+      </div>
+      <div class="nav-links">
+        <a href="/">Dashboard</a>
+        <a href="/history">History</a>
+        <a href="/progress">Progress</a>
+        <a href="/training" style="color: white">Training Lab</a>
+        <a href="/logout" style="color: #ef4444">Logout</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <h2 style="margin-bottom: 2rem">
+        <i class="fa-solid fa-dumbbell"></i> My Training Routines
+      </h2>
+
+      <div class="workout-grid">
+        <div class="card">
+          <h3 style="color: var(--primary); margin-top: 0">
+            Push Day (Chest/Shoulders)
+          </h3>
+          <ul class="exercise-list">
+            <li>Bench Press: 4 sets x 8 reps</li>
+            <li>Overhead Press: 3 sets x 10 reps</li>
+            <li>Incline Dumbbell Fly: 3 sets x 12 reps</li>
+            <li>Lateral Raises: 4 sets x 15 reps</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: #10b981; margin-top: 0">Pull Day (Back/Biceps)</h3>
+          <ul class="exercise-list">
+            <li>Deadlifts: 3 sets x 5 reps</li>
+            <li>Lat Pulldowns: 4 sets x 10 reps</li>
+            <li>Seated Cable Rows: 3 sets x 12 reps</li>
+            <li>Hammer Curls: 3 sets x 12 reps</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: #f59e0b; margin-top: 0">Leg Day</h3>
+          <ul class="exercise-list">
+            <li>Back Squats: 4 sets x 8 reps</li>
+            <li>Leg Press: 3 sets x 12 reps</li>
+            <li>Leg Curls: 3 sets x 15 reps</li>
+            <li>Calf Raises: 4 sets x 20 reps</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

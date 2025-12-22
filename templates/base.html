@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>STRIVE | Fitness</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary: #3b82f6;
+        --dark: #0f172a;
+        --bg: #f8fafc;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        margin: 0;
+      }
+
+      /* Nav Bar Styling */
+      .navbar {
+        background: var(--dark);
+        padding: 1rem 10%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      .nav-brand {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-decoration: none;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
+      .nav-links a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: 0.3s;
+      }
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: white;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      .card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+      }
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-blue {
+        background: var(--primary);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="/" class="nav-brand">STRIVE</a>
+      <div class="nav-links">
+        <a href="/"><i class="fa-solid fa-house"></i> Dashboard</a>
+        <a href="/history"><i class="fa-solid fa-calendar-days"></i> History</a>
+        <a href="/progress"><i class="fa-solid fa-chart-line"></i> Progress</a>
+        <a href="/training"
+          ><i class="fa-solid fa-dumbbell"></i> Training Lab</a
+        >
+      </div>
+      <a
+        href="/logout"
+        style="color: #ef4444; text-decoration: none; font-size: 0.9rem"
+        >Logout</a
+      >
+    </nav>
+
+    <div class="container">{% block content %}{% endblock %}</div>
+  </body>
+</html>

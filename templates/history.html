@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>History</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --text: #1e293b;
+        --border: #e2e8f0;
+      }
+      body.dark-mode {
+        --bg: #020617;
+        --card: #1e293b;
+        --text: #f1f5f9;
+        --border: #334155;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .navbar {
+        background: #0f172a;
+        padding: 1rem;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 15px;
+      }
+      .h-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <a href="/" style="color: white"><i class="fas fa-home"></i></a
+      ><strong>My History</strong>
+    </nav>
+    <div class="container">
+      {% for log in logs %}
+      <div class="h-card">
+        <div style="display: flex; justify-content: space-between">
+          <span style="color: #3b82f6; font-weight: bold"
+            >{{ log.date.strftime('%A, %b %d') }}</span
+          >
+          <span style="font-weight: bold">💪 {{ log.workout }}</span>
+        </div>
+        <div class="grid">
+          <div>🔥 {{ log.calories }} kcal</div>
+          <div>🍗 {{ log.protein }}g Pro</div>
+          <div>👟 {{ log.steps }}</div>
+          <div>💧 {{ log.water }} L</div>
+          <div>😴 {{ log.sleep }}h</div>
+          <div>⚡ {{ log.intensity }}/10</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <script>
+      if (localStorage.getItem("theme") === "dark")
+        document.body.classList.add("dark-mode");
+    </script>
+  </body>
+</html>

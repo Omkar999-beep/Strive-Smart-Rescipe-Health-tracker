@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STRIVE | Join Us</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* (Use the same CSS as Login above to keep it consistent) */
+      :root {
+        --primary: #10b981;
+        --dark: #0f172a;
+      } /* Green for Signup */
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .login-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+      .logo {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--dark);
+        margin-bottom: 0.5rem;
+      }
+      .subtitle {
+        color: #64748b;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+      .input-group {
+        text-align: left;
+        margin-bottom: 1.2rem;
+      }
+      .input-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-sizing: border-box;
+      }
+      .btn {
+        width: 100%;
+        padding: 12px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+      .footer-link {
+        margin-top: 1.5rem;
+        font-size: 0.85rem;
+        color: #64748b;
+      }
+      .footer-link a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-card">
+      <div class="logo">STRIVE</div>
+      <div class="subtitle">Start your transformation today.</div>
+
+      <form action="/signup" method="POST">
+        <div class="input-group">
+          <label>CHOOSE USERNAME</label>
+          <input
+            type="text"
+            name="username"
+            placeholder="FitnessHero7"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <label>CREATE PASSWORD</label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Choose a strong password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn">Create Account</button>
+      </form>
+
+      <div class="footer-link">
+        Already a member?
+        <a href="/login" style="color: #3b82f6">Log in here</a>
+      </div>
+    </div>
+  </body>
+</html>
