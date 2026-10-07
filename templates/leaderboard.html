@@ -1,143 +1,178 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Strive Feed</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --bg: #f8fafc;
-        --card: #ffffff;
-        --text: #1e293b;
-        --border: #e2e8f0;
-        --primary: #3b82f6;
-      }
-      body.dark-mode {
-        --bg: #020617;
-        --card: #1e293b;
-        --text: #f1f5f9;
-        --border: #334155;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: sans-serif;
-        margin: 0;
-      }
-      .navbar {
-        background: #0f172a;
-        padding: 1rem;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-      }
-      .container {
-        max-width: 500px;
-        margin: auto;
-        padding: 15px;
-      }
-      .post {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 15px;
-        margin-bottom: 15px;
-      }
-      .badge {
-        background: #eff6ff;
-        color: #1d4ed8;
-        padding: 4px 8px;
-        border-radius: 6px;
-        font-size: 0.7rem;
-        font-weight: bold;
-      }
-      .winner-card {
-        background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
-        border: none;
-        text-align: center;
-        color: #422006;
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 20px;
-        box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.3);
-      }
-      .cheer-btn {
-        background: #fff1f2;
-        color: #e11d48;
-        border: 1px solid #fda4af;
-        padding: 8px 16px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <a href="/" style="color: white"><i class="fas fa-arrow-left"></i></a
-      ><strong>Feed</strong>
-    </nav>
-    <div class="container">
-      {% if winner %}
-      <div class="winner-card">
-        <i
-          class="fas fa-crown"
-          style="font-size: 2rem; margin-bottom: 10px"
-        ></i>
-        <h2 style="margin: 0">Weekly Champion</h2>
-        <p style="font-weight: bold; font-size: 1.2rem; margin: 5px 0">
-          @{{ winner.name }}
+{% extends "base.html" %}
+
+{% block title %}Community Feed & Leaderboard | STRIVE Fitness{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+  <!-- Header Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); border-color: rgba(234, 179, 8, 0.3);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: #d97706; text-transform: uppercase; letter-spacing: 1px;">
+          <i class="fa-solid fa-trophy"></i> Community & Competitions
+        </div>
+        <h1 style="font-size: 2rem; margin: 4px 0 6px;">STRIVE Community Feed & Leaderboard</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Cheer on fellow athletes, celebrate consistency, and climb the weekly leaderboard.
         </p>
-        <div
-          style="
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.8;
-          "
-        >
-          Score: {{ winner.score }} pts
-        </div>
       </div>
-      {% endif %} {% for log in logs %}
-      <div class="post">
-        <div style="display: flex; justify-content: space-between">
-          <strong>@{{ log.author.username }}</strong>
-          <small style="color: #64748b">{{ log.date.strftime('%H:%M') }}</small>
-        </div>
-        <h3 style="margin: 10px 0">💪 {{ log.workout }}</h3>
-        <div
-          style="display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px"
-        >
-          <span class="badge">🔥 {{ log.calories }} c</span>
-          <span class="badge">🍗 {{ log.protein }}g</span>
-          <span class="badge">👟 {{ log.steps }}</span>
-          <span class="badge">💧 {{ log.water }}L</span>
-        </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          "
-        >
-          <form action="/cheer/{{ log.id }}" method="POST">
-            <button class="cheer-btn">❤️ {{ log.cheers|length }}</button>
-          </form>
-          <span style="font-size: 0.8rem; color: #94a3b8"
-            >{{ log.intensity }}/10</span
-          >
-        </div>
-      </div>
-      {% endfor %}
+
+      <a href="{{ url_for('home') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Share Today's Log
+      </a>
     </div>
-    <script>
-      if (localStorage.getItem("theme") === "dark")
-        document.body.classList.add("dark-mode");
-    </script>
-  </body>
-</html>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 1.5rem;" class="feed-grid">
+    
+    <!-- LEFT COLUMN: Champion & Rankings -->
+    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+      
+      <!-- Weekly Champion Podium Card -->
+      {% if winner %}
+      <div class="card" style="background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #eab308 100%); color: #422006; border: none; text-align: center; box-shadow: 0 12px 24px rgba(234, 179, 8, 0.25);">
+        <div style="font-size: 2.5rem; margin-bottom: 6px;">
+          <i class="fa-solid fa-crown" style="color: #78350f;"></i>
+        </div>
+        <div style="font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85;">
+          Weekly Champion
+        </div>
+        <div style="font-size: 1.75rem; font-weight: 900; font-family: var(--font-heading); margin: 4px 0;">
+          @{{ winner.name }}
+        </div>
+        <div style="display: inline-block; background: rgba(0,0,0,0.12); padding: 4px 12px; border-radius: 99px; font-weight: 700; font-size: 0.9rem;">
+          {{ winner.score }} Points Earned
+        </div>
+        <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.85;">
+          Scored via: Steps + Protein + Workout Intensity
+        </p>
+      </div>
+      {% endif %}
+
+      <!-- Ranking Standings Table -->
+      <div class="card">
+        <div class="card-header-clean">
+          <div class="card-title-clean">
+            <i class="fa-solid fa-ranking-star" style="color: var(--primary);"></i>
+            Weekly Standings
+          </div>
+        </div>
+
+        {% if ranking %}
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          {% for r in ranking %}
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-subtle); border-radius: 10px; border: 1px solid var(--card-border);">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.85rem;
+                {% if loop.index == 1 %}background: #facc15; color: #713f12;
+                {% elif loop.index == 2 %}background: #cbd5e1; color: #334155;
+                {% elif loop.index == 3 %}background: #d97706; color: white;
+                {% else %}background: rgba(255,255,255,0.1); color: var(--text-muted);{% endif %}">
+                {{ loop.index }}
+              </div>
+              <span style="font-weight: 700; font-size: 0.95rem;">@{{ r.name }}</span>
+            </div>
+            <span style="font-weight: 800; color: var(--primary); font-size: 0.95rem;">
+              {{ r.score }} pts
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+          No weekly scores yet. Complete a workout check-in to be ranked!
+        </p>
+        {% endif %}
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Social Feed -->
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <h2 style="font-size: 1.35rem; margin-bottom: 0.25rem;">
+        <i class="fa-solid fa-users" style="color: var(--primary);"></i>
+        Recent Community Activity
+      </h2>
+
+      {% if logs %}
+        {% for log in logs %}
+        <div class="card" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- User & Time Header -->
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.9rem;">
+                {{ log.author.username[:1].upper() }}
+              </div>
+              <div>
+                <div style="font-weight: 700; font-size: 0.95rem;">@{{ log.author.username }}</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted);">
+                  {{ log.date.strftime('%b %d, %Y at %I:%M %p') }}
+                </div>
+              </div>
+            </div>
+
+            <span class="badge badge-yellow">
+              <i class="fa-solid fa-fire"></i> {{ log.intensity }}/10 Intensity
+            </span>
+          </div>
+
+          <!-- Workout Details -->
+          <div style="font-size: 1.15rem; font-weight: 800; font-family: var(--font-heading); color: var(--text-main);">
+            💪 {{ log.workout }}
+          </div>
+
+          {% if log.notes %}
+          <p style="color: var(--text-muted); font-size: 0.92rem; margin: 0;">
+            "{{ log.notes }}"
+          </p>
+          {% endif %}
+
+          <!-- Badges Grid -->
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <span class="badge badge-blue"><i class="fa-solid fa-fire"></i> {{ log.calories }} kcal</span>
+            <span class="badge badge-green"><i class="fa-solid fa-drumstick-bite"></i> {{ log.protein }}g pro</span>
+            <span class="badge badge-purple"><i class="fa-solid fa-shoe-prints"></i> {{ "{:,}".format(log.steps) }} steps</span>
+            <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: #0284c7;"><i class="fa-solid fa-droplet"></i> {{ log.water }} L</span>
+            <span class="badge" style="background: rgba(100, 116, 139, 0.15); color: var(--text-muted);"><i class="fa-solid fa-moon"></i> {{ log.sleep }}h sleep</span>
+          </div>
+
+          <!-- Cheers & Interaction Footer -->
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid var(--card-border);">
+            <form action="{{ url_for('cheer', log_id=log.id) }}" method="POST">
+              <button type="submit" class="btn" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); padding: 6px 14px; border-radius: 99px; font-size: 0.85rem;">
+                <i class="fa-solid fa-heart"></i>
+                <span>{{ log.cheers|length }} Cheers</span>
+              </button>
+            </form>
+
+            <span style="font-size: 0.8rem; color: var(--text-muted);">
+              Weight: {{ log.weight }} kg
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+      <div class="card" style="text-align: center; padding: 3rem 1.5rem;">
+        <i class="fa-solid fa-comments" style="font-size: 3rem; color: var(--text-muted); opacity: 0.3; margin-bottom: 0.5rem;"></i>
+        <h3>No Community Posts Yet</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Be the first athlete to log a session and appear on the community feed!
+        </p>
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  @media (max-width: 868px) {
+    .feed-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+{% endblock %}

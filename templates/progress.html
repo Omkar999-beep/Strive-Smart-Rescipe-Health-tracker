@@ -1,106 +1,306 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>STRIVE | Progress</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      :root {
-        --primary: #3b82f6;
-        --dark: #0f172a;
-        --bg: #f8fafc;
-      }
-      body {
-        font-family: "Inter", sans-serif;
-        background: var(--bg);
-        margin: 0;
-      }
-      .navbar {
-        background: var(--dark);
-        padding: 1rem 5%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .nav-links a {
-        color: #94a3b8;
-        text-decoration: none;
-        margin-left: 20px;
-        font-weight: 600;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-      }
-      .card {
-        background: white;
-        padding: 2rem;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <div style="color: white; font-size: 1.5rem; font-weight: 900">
-        STRIVE
-      </div>
-      <div class="nav-links">
-        <a href="/">Dashboard</a>
-        <a href="/history">History</a>
-        <a href="/progress" style="color: white">Progress</a>
-        <a href="/logout" style="color: #ef4444">Logout</a>
-      </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container">
-      <div class="card">
-        <h2>
-          <i class="fa-solid fa-chart-line" style="color: var(--primary)"></i>
-          Performance Trends
-        </h2>
-        <p style="color: #64748b">
-          Visualize your weight loss vs. workout intensity over time.
+{% block title %}Progress Analytics | STRIVE Fitness{% endblock %}
+
+{% block extra_head %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+  <!-- Hero Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.08) 100%);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">
+          <i class="fa-solid fa-chart-line"></i> Analytics & Trends
+        </div>
+        <h1 style="font-size: 2rem; margin: 4px 0 6px;">Performance & Body Composition</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Track your progression across body weight, nutrition adherence, steps, and training intensity.
         </p>
-        <canvas id="bigChart" height="150"></canvas>
+      </div>
+
+      <a href="{{ url_for('home') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Log Today's Session
+      </a>
+    </div>
+  </div>
+
+  <!-- Key Performance Stat Cards -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+    <!-- Current Weight -->
+    <div class="card">
+      <span class="form-label">Current Weight</span>
+      <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); margin: 4px 0;">
+        {{ current_weight }} <span style="font-size: 1rem; color: var(--text-muted);">kg</span>
+      </div>
+      <div style="font-size: 0.85rem; color: {% if weight_change < 0 %}#10b981{% elif weight_change > 0 %}#3b82f6{% else %}var(--text-muted){% endif %}; font-weight: 600;">
+        {% if weight_change > 0 %}
+          <i class="fa-solid fa-arrow-trend-up"></i> +{{ weight_change }} kg overall
+        {% elif weight_change < 0 %}
+          <i class="fa-solid fa-arrow-trend-down"></i> {{ weight_change }} kg overall
+        {% else %}
+          <i class="fa-solid fa-minus"></i> Stable weight
+        {% endif %}
       </div>
     </div>
 
-    <script>
-      const ctx = document.getElementById('bigChart').getContext('2d');
-      new Chart(ctx, {
+    <!-- Total Days Logged -->
+    <div class="card">
+      <span class="form-label">Total Logs</span>
+      <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); margin: 4px 0;">
+        {{ total_logs }} <span style="font-size: 1rem; color: var(--text-muted);">days</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--success); font-weight: 600;">
+        <i class="fa-solid fa-medal"></i> Habit consistency
+      </div>
+    </div>
+
+    <!-- Average Steps -->
+    <div class="card">
+      <span class="form-label">Average Steps</span>
+      <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); margin: 4px 0;">
+        {{ avg_steps }} <span style="font-size: 1rem; color: var(--text-muted);">/ day</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Target: {{ user.steps_goal or 10000 }} steps
+      </div>
+    </div>
+
+    <!-- Average Protein -->
+    <div class="card">
+      <span class="form-label">Avg Protein</span>
+      <div style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading); margin: 4px 0;">
+        {{ avg_protein }} <span style="font-size: 1rem; color: var(--text-muted);">g / day</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--text-muted);">
+        Target: {{ user.protein_goal or 150 }}g
+      </div>
+    </div>
+  </div>
+
+  {% if logs %}
+  <!-- Charts Row -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="charts-grid">
+    <!-- Weight & Intensity Chart -->
+    <div class="card">
+      <div class="card-header-clean">
+        <div class="card-title-clean">
+          <i class="fa-solid fa-weight-scale" style="color: var(--primary);"></i>
+          Weight & Workout Intensity
+        </div>
+      </div>
+      <div style="position: relative; height: 300px; width: 100%;">
+        <canvas id="weightIntensityChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Nutrition Chart (Calories & Protein) -->
+    <div class="card">
+      <div class="card-header-clean">
+        <div class="card-title-clean">
+          <i class="fa-solid fa-bowl-food" style="color: var(--success);"></i>
+          Calories & Protein Adherence
+        </div>
+      </div>
+      <div style="position: relative; height: 300px; width: 100%;">
+        <canvas id="nutritionChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Steps Chart -->
+  <div class="card">
+    <div class="card-header-clean">
+      <div class="card-title-clean">
+        <i class="fa-solid fa-person-walking" style="color: var(--purple);"></i>
+        Daily Step Volume History
+      </div>
+    </div>
+    <div style="position: relative; height: 260px; width: 100%;">
+      <canvas id="stepsChart"></canvas>
+    </div>
+  </div>
+  {% else %}
+  <div class="card" style="text-align: center; padding: 4rem 2rem;">
+    <i class="fa-solid fa-chart-simple" style="font-size: 3.5rem; color: var(--primary); opacity: 0.4; margin-bottom: 1rem;"></i>
+    <h2>No Logs Recorded Yet</h2>
+    <p style="color: var(--text-muted); max-width: 480px; margin: 0.5rem auto 1.5rem;">
+      Start logging your daily meals, workouts, and water on the dashboard to unlock visual analytics, weight progression charts, and habit insights.
+    </p>
+    <a href="{{ url_for('home') }}" class="btn btn-primary">
+      <i class="fa-solid fa-plus"></i> Create Your First Log
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% if logs %}
+<script>
+  // Chart.js Theme setup
+  const isDark = document.body.classList.contains('dark-mode');
+  const textColor = isDark ? '#94a3b8' : '#64748b';
+  const gridColor = isDark ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.06)';
+
+  // Chart Data preparation
+  const labels = [{% for log in logs %}"{{ log.date.strftime('%b %d') }}"{% if not loop.last %},{% endif %}{% endfor %}];
+  const weightData = [{% for log in logs %}{{ log.weight or 70.0 }}{% if not loop.last %},{% endif %}{% endfor %}];
+  const intensityData = [{% for log in logs %}{{ log.intensity or 5 }}{% if not loop.last %},{% endif %}{% endfor %}];
+  const calData = [{% for log in logs %}{{ log.calories or 0 }}{% if not loop.last %},{% endif %}{% endfor %}];
+  const proData = [{% for log in logs %}{{ log.protein or 0.0 }}{% if not loop.last %},{% endif %}{% endfor %}];
+  const stepsData = [{% for log in logs %}{{ log.steps or 0 }}{% if not loop.last %},{% endif %}{% endfor %}];
+
+  // 1. Weight & Intensity Chart
+  const ctxWI = document.getElementById('weightIntensityChart').getContext('2d');
+  new Chart(ctxWI, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Weight (kg)',
+          data: weightData,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          fill: true,
+          tension: 0.35,
+          yAxisID: 'y',
+          borderWidth: 3,
+          pointRadius: 4
+        },
+        {
+          label: 'Intensity (1-10)',
+          data: intensityData,
+          borderColor: '#f59e0b',
+          backgroundColor: 'transparent',
+          tension: 0.35,
+          yAxisID: 'y1',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          pointRadius: 3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'Weight (kg)', color: textColor },
+          ticks: { color: textColor },
+          grid: { color: gridColor }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Intensity', color: textColor },
+          ticks: { color: textColor },
+          grid: { drawOnChartArea: false },
+          min: 1,
+          max: 10
+        }
+      }
+    }
+  });
+
+  // 2. Nutrition Chart
+  const ctxNut = document.getElementById('nutritionChart').getContext('2d');
+  new Chart(ctxNut, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Calories (kcal)',
+          data: calData,
+          backgroundColor: 'rgba(59, 130, 246, 0.75)',
+          borderRadius: 6,
+          yAxisID: 'y'
+        },
+        {
           type: 'line',
-          data: {
-              labels: [{% for log in logs %}"{{ log.date.strftime('%b %d') }}"{% if not loop.last %},{% endif %}{% endfor %}],
-              datasets: [{
-                  label: 'Weight (kg)',
-                  data: [{% for log in logs %}{{ log.weight }}{% if not loop.last %},{% endif %}{% endfor %}],
-                  borderColor: '#3b82f6',
-                  yAxisID: 'y',
-                  tension: 0.3
-              }, {
-                  label: 'Intensity (1-10)',
-                  data: [{% for log in logs %}{{ log.intensity }}{% if not loop.last %},{% endif %}{% endfor %}],
-                  borderColor: '#10b981',
-                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                  fill: true,
-                  yAxisID: 'y1',
-                  tension: 0.3
-              }]
-          },
-          options: {
-              scales: {
-                  y: { type: 'linear', position: 'left', title: { display: true, text: 'Weight' } },
-                  y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Intensity' } }
-              }
-          }
-      });
-    </script>
-  </body>
-</html>
+          label: 'Protein (g)',
+          data: proData,
+          borderColor: '#10b981',
+          backgroundColor: 'rgba(16, 185, 129, 0.2)',
+          fill: false,
+          tension: 0.3,
+          yAxisID: 'y1',
+          borderWidth: 3,
+          pointRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: {
+          type: 'linear',
+          position: 'left',
+          title: { display: true, text: 'Calories (kcal)', color: textColor },
+          ticks: { color: textColor },
+          grid: { color: gridColor }
+        },
+        y1: {
+          type: 'linear',
+          position: 'right',
+          title: { display: true, text: 'Protein (g)', color: textColor },
+          ticks: { color: textColor },
+          grid: { drawOnChartArea: false }
+        }
+      }
+    }
+  });
+
+  // 3. Steps Chart
+  const ctxSteps = document.getElementById('stepsChart').getContext('2d');
+  new Chart(ctxSteps, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Steps Walked',
+        data: stepsData,
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+        fill: true,
+        tension: 0.3,
+        borderWidth: 3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { ticks: { color: textColor }, grid: { color: gridColor } },
+        y: {
+          ticks: { color: textColor },
+          grid: { color: gridColor },
+          title: { display: true, text: 'Steps', color: textColor }
+        }
+      }
+    }
+  });
+</script>
+<style>
+  @media (max-width: 868px) {
+    .charts-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+{% endif %}
+{% endblock %}

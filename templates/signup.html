@@ -1,119 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>STRIVE | Join Us</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      /* (Use the same CSS as Login above to keep it consistent) */
-      :root {
-        --primary: #10b981;
-        --dark: #0f172a;
-      } /* Green for Signup */
-      body {
-        font-family: "Inter", sans-serif;
-        background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
-        margin: 0;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .login-card {
-        background: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-      }
-      .logo {
-        font-size: 2rem;
-        font-weight: 900;
-        color: var(--dark);
-        margin-bottom: 0.5rem;
-      }
-      .subtitle {
-        color: #64748b;
-        margin-bottom: 2rem;
-        font-size: 0.9rem;
-      }
-      .input-group {
-        text-align: left;
-        margin-bottom: 1.2rem;
-      }
-      .input-group label {
-        display: block;
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #475569;
-        margin-bottom: 5px;
-      }
-      input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        box-sizing: border-box;
-      }
-      .btn {
-        width: 100%;
-        padding: 12px;
-        background: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 10px;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 1rem;
-      }
-      .footer-link {
-        margin-top: 1.5rem;
-        font-size: 0.85rem;
-        color: #64748b;
-      }
-      .footer-link a {
-        color: var(--primary);
-        text-decoration: none;
-        font-weight: 600;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="login-card">
-      <div class="logo">STRIVE</div>
-      <div class="subtitle">Start your transformation today.</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | STRIVE Fitness</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <style>
+    body {
+      background: linear-gradient(135deg, #090d16 0%, #064e3b 50%, #0f172a 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .auth-card {
+      background: rgba(19, 27, 46, 0.9);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
 
-      <form action="/signup" method="POST">
-        <div class="input-group">
-          <label>CHOOSE USERNAME</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="FitnessHero7"
-            required
-          />
-        </div>
-        <div class="input-group">
-          <label>CREATE PASSWORD</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="Choose a strong password"
-            required
-          />
-        </div>
-        <button type="submit" class="btn">Create Account</button>
-      </form>
-
-      <div class="footer-link">
-        Already a member?
-        <a href="/login" style="color: #3b82f6">Log in here</a>
-      </div>
+  <div class="auth-card">
+    <!-- Brand Logo -->
+    <div style="display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 16px; margin-bottom: 1rem; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);">
+      <i class="fa-solid fa-dumbbell" style="font-size: 1.5rem; color: white;"></i>
     </div>
-  </body>
+    
+    <h1 style="font-size: 1.85rem; font-weight: 900; margin-bottom: 6px;">Join STRIVE</h1>
+    <p style="color: #94a3b8; font-size: 0.92rem; margin-bottom: 1.75rem;">
+      Create your account and begin your transformation today.
+    </p>
+
+    <!-- Flash Alerts -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div style="margin-bottom: 1.25rem;">
+        {% for category, message in messages %}
+        <div class="flash-toast {{ category }}" style="text-align: left; padding: 10px 14px; font-size: 0.88rem;">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('signup') }}" method="POST" style="text-align: left;">
+      <div class="form-group">
+        <label class="form-label" style="color: #94a3b8;">Choose Username</label>
+        <div style="position: relative;">
+          <input type="text" name="username" class="form-control" placeholder="e.g. IronAthlete" style="background: rgba(15, 23, 42, 0.8); border-color: rgba(255, 255, 255, 0.12); color: white; padding-left: 38px;" required autofocus />
+          <i class="fa-solid fa-user" style="position: absolute; left: 14px; top: 14px; color: #64748b;"></i>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label class="form-label" style="color: #94a3b8;">Create Password</label>
+        <div style="position: relative;">
+          <input type="password" name="password" id="signupPassword" class="form-control" placeholder="Choose a password" style="background: rgba(15, 23, 42, 0.8); border-color: rgba(255, 255, 255, 0.12); color: white; padding-left: 38px; padding-right: 40px;" required />
+          <i class="fa-solid fa-lock" style="position: absolute; left: 14px; top: 14px; color: #64748b;"></i>
+          <button type="button" onclick="togglePassVisibility('signupPassword', this)" style="position: absolute; right: 12px; top: 12px; background: none; border: none; color: #94a3b8; cursor: pointer;">
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success" style="width: 100%; padding: 13px; font-size: 1.05rem;">
+        Create Account <i class="fa-solid fa-user-plus"></i>
+      </button>
+    </form>
+
+    <div style="margin-top: 1.5rem; font-size: 0.9rem; color: #94a3b8;">
+      Already have an account? 
+      <a href="{{ url_for('login') }}" style="color: #34d399; font-weight: 600; text-decoration: none;">Log in here</a>
+    </div>
+  </div>
+
+  <script>
+    function togglePassVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye';
+      }
+    }
+  </script>
+</body>
 </html>

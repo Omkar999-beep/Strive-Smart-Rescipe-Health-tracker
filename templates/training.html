@@ -1,116 +1,223 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>STRIVE | Training Lab</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --primary: #3b82f6;
-        --dark: #0f172a;
-        --bg: #f8fafc;
-      }
-      body {
-        font-family: "Inter", sans-serif;
-        background: var(--bg);
-        margin: 0;
-      }
-      .navbar {
-        background: var(--dark);
-        padding: 1rem 5%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .nav-links a {
-        color: #94a3b8;
-        text-decoration: none;
-        margin-left: 20px;
-        font-weight: 600;
-      }
-      .container {
-        max-width: 1000px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-      }
-      .workout-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-      }
-      .card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-      }
-      .exercise-list {
-        list-style: none;
-        padding: 0;
-        margin-top: 1rem;
-      }
-      .exercise-list li {
-        padding: 8px 0;
-        border-bottom: 1px solid #f1f5f9;
-        font-size: 0.9rem;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <div style="color: white; font-size: 1.5rem; font-weight: 900">
-        STRIVE
+{% extends "base.html" %}
+
+{% block title %}Training Lab | STRIVE Fitness{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+  <!-- Header Section -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(16, 185, 129, 0.08) 100%);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">
+          <i class="fa-solid fa-dumbbell"></i> Workout Protocols
+        </div>
+        <h1 style="font-size: 2rem; margin: 4px 0 6px;">STRIVE Training Lab</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          Select your training split, track exercise sets in real-time, and utilize the built-in interval rest timer.
+        </p>
       </div>
-      <div class="nav-links">
-        <a href="/">Dashboard</a>
-        <a href="/history">History</a>
-        <a href="/progress">Progress</a>
-        <a href="/training" style="color: white">Training Lab</a>
-        <a href="/logout" style="color: #ef4444">Logout</a>
+
+      <!-- Quick Stopwatch / Rest Timer Launcher -->
+      <a href="#restTimerSection" class="btn btn-primary">
+        <i class="fa-solid fa-stopwatch"></i> Open Rest Timer
+      </a>
+    </div>
+  </div>
+
+  <!-- Built-in Rest Timer Widget -->
+  <div id="restTimerSection" class="card" style="border: 2px solid rgba(59, 130, 246, 0.3);">
+    <div class="card-header-clean">
+      <div class="card-title-clean">
+        <i class="fa-solid fa-stopwatch-20" style="color: var(--primary);"></i>
+        Smart Set Rest Timer
       </div>
-    </nav>
+      <span class="badge badge-blue" id="timerStatusBadge">Ready</span>
+    </div>
 
-    <div class="container">
-      <h2 style="margin-bottom: 2rem">
-        <i class="fa-solid fa-dumbbell"></i> My Training Routines
-      </h2>
+    <div style="display: flex; flex-direction: column; align-items: center; padding: 1rem 0;">
+      <div style="font-size: 4rem; font-weight: 900; font-family: var(--font-heading); letter-spacing: 2px; color: var(--text-main);" id="timerDisplay">
+        01:30
+      </div>
 
-      <div class="workout-grid">
-        <div class="card">
-          <h3 style="color: var(--primary); margin-top: 0">
-            Push Day (Chest/Shoulders)
-          </h3>
-          <ul class="exercise-list">
-            <li>Bench Press: 4 sets x 8 reps</li>
-            <li>Overhead Press: 3 sets x 10 reps</li>
-            <li>Incline Dumbbell Fly: 3 sets x 12 reps</li>
-            <li>Lateral Raises: 4 sets x 15 reps</li>
-          </ul>
-        </div>
+      <!-- Timer Progress Bar -->
+      <div style="width: 100%; max-width: 450px; background: var(--bg-subtle); height: 10px; border-radius: 99px; overflow: hidden; margin-bottom: 1.5rem;">
+        <div id="timerProgress" style="background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; width: 100%; border-radius: 99px; transition: width 0.2s linear;"></div>
+      </div>
 
-        <div class="card">
-          <h3 style="color: #10b981; margin-top: 0">Pull Day (Back/Biceps)</h3>
-          <ul class="exercise-list">
-            <li>Deadlifts: 3 sets x 5 reps</li>
-            <li>Lat Pulldowns: 4 sets x 10 reps</li>
-            <li>Seated Cable Rows: 3 sets x 12 reps</li>
-            <li>Hammer Curls: 3 sets x 12 reps</li>
-          </ul>
-        </div>
+      <!-- Preset Pills -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 1.25rem;">
+        <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.85rem;" onclick="setPresetTime(30)">30s (Mobility)</button>
+        <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.85rem;" onclick="setPresetTime(60)">60s (Hypertrophy)</button>
+        <button class="btn btn-outline active" style="padding: 6px 14px; font-size: 0.85rem; border-color: var(--primary); color: var(--primary);" onclick="setPresetTime(90)">90s (Compound)</button>
+        <button class="btn btn-outline" style="padding: 6px 14px; font-size: 0.85rem;" onclick="setPresetTime(120)">120s (Heavy Power)</button>
+      </div>
 
-        <div class="card">
-          <h3 style="color: #f59e0b; margin-top: 0">Leg Day</h3>
-          <ul class="exercise-list">
-            <li>Back Squats: 4 sets x 8 reps</li>
-            <li>Leg Press: 3 sets x 12 reps</li>
-            <li>Leg Curls: 3 sets x 15 reps</li>
-            <li>Calf Raises: 4 sets x 20 reps</li>
-          </ul>
-        </div>
+      <!-- Timer Controls -->
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-success" id="startTimerBtn" onclick="toggleTimer()" style="padding: 10px 24px; font-size: 1rem;">
+          <i class="fa-solid fa-play" id="timerPlayIcon"></i> Start Timer
+        </button>
+        <button class="btn btn-outline" onclick="resetTimer()" style="padding: 10px 20px;">
+          <i class="fa-solid fa-arrow-rotate-left"></i> Reset
+        </button>
       </div>
     </div>
-  </body>
-</html>
+  </div>
+
+  <!-- Workout Protocols Grid -->
+  <h2 style="font-size: 1.5rem; margin-top: 0.5rem;">Recommended Training Splits</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+    {% for r in routines %}
+    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; border-top: 4px solid {{ r.color }};">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+          <h3 style="font-size: 1.25rem; color: {{ r.color }}; margin: 0;">{{ r.name }}</h3>
+          <span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid {{ r.color }}; color: {{ r.color }};">
+            {{ r.badge }}
+          </span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem;">
+          {{ r.description }}
+        </p>
+
+        <!-- Exercises List -->
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 1.5rem;">
+          {% for ex in r.exercises %}
+          <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: var(--bg-subtle); border-radius: 10px; border: 1px solid var(--card-border);" id="ex-{{ r.id }}-{{ loop.index0 }}">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="checkbox" id="check-{{ r.id }}-{{ loop.index0 }}" onchange="toggleExerciseCheck('ex-{{ r.id }}-{{ loop.index0 }}', this.checked)" style="width: 18px; height: 18px; cursor: pointer; accent-color: {{ r.color }};" />
+              <label for="check-{{ r.id }}-{{ loop.index0 }}" style="font-weight: 600; font-size: 0.92rem; cursor: pointer;">
+                {{ ex.name }}
+              </label>
+            </div>
+            <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">
+              <div><strong style="color: var(--text-main);">{{ ex.sets }}</strong> &bull; {{ ex.reps }}</div>
+              <div style="color: var(--primary); font-size: 0.75rem;"><i class="fa-regular fa-clock"></i> {{ ex.rest }} rest</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div>
+        <a href="{{ url_for('home', workout=r.name) }}" class="btn btn-outline" style="width: 100%; border-color: {{ r.color }}; color: {{ r.color }};">
+          <i class="fa-solid fa-check-double"></i> Log This Routine Today
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Strike-through effect for completed exercise
+  function toggleExerciseCheck(containerId, isChecked) {
+    const el = document.getElementById(containerId);
+    if (el) {
+      if (isChecked) {
+        el.style.opacity = '0.5';
+        el.style.textDecoration = 'line-through';
+      } else {
+        el.style.opacity = '1';
+        el.style.textDecoration = 'none';
+      }
+    }
+  }
+
+  // Interval Rest Timer Logic
+  let totalTime = 90;
+  let remainingTime = 90;
+  let timerInterval = null;
+  let isRunning = false;
+
+  const timerDisplay = document.getElementById('timerDisplay');
+  const timerProgress = document.getElementById('timerProgress');
+  const timerStatusBadge = document.getElementById('timerStatusBadge');
+  const startTimerBtn = document.getElementById('startTimerBtn');
+  const timerPlayIcon = document.getElementById('timerPlayIcon');
+
+  function setPresetTime(seconds) {
+    clearInterval(timerInterval);
+    isRunning = false;
+    totalTime = seconds;
+    remainingTime = seconds;
+    updateDisplay();
+    timerStatusBadge.innerText = 'Ready';
+    timerStatusBadge.className = 'badge badge-blue';
+    startTimerBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Timer';
+  }
+
+  function updateDisplay() {
+    const mins = Math.floor(remainingTime / 60);
+    const secs = remainingTime % 60;
+    timerDisplay.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const pct = totalTime > 0 ? (remainingTime / totalTime) * 100 : 0;
+    timerProgress.style.width = pct + '%';
+  }
+
+  function toggleTimer() {
+    if (isRunning) {
+      clearInterval(timerInterval);
+      isRunning = false;
+      timerStatusBadge.innerText = 'Paused';
+      timerStatusBadge.className = 'badge badge-yellow';
+      startTimerBtn.innerHTML = '<i class="fa-solid fa-play"></i> Resume Timer';
+    } else {
+      if (remainingTime <= 0) remainingTime = totalTime;
+      isRunning = true;
+      timerStatusBadge.innerText = 'Resting...';
+      timerStatusBadge.className = 'badge badge-green';
+      startTimerBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause Timer';
+
+      timerInterval = setInterval(() => {
+        remainingTime--;
+        updateDisplay();
+        if (remainingTime <= 0) {
+          clearInterval(timerInterval);
+          isRunning = false;
+          timerStatusBadge.innerText = 'Time\'s Up! Next Set 🔥';
+          timerStatusBadge.className = 'badge badge-purple';
+          startTimerBtn.innerHTML = '<i class="fa-solid fa-play"></i> Restart';
+          playChime();
+        }
+      }, 1000);
+    }
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    isRunning = false;
+    remainingTime = totalTime;
+    updateDisplay();
+    timerStatusBadge.innerText = 'Ready';
+    timerStatusBadge.className = 'badge badge-blue';
+    startTimerBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start Timer';
+  }
+
+  // Web Audio Synth Chime
+  function playChime() {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.15); // A5
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.8);
+    } catch (e) {
+      console.log('Audio chime not permitted without user gesture');
+    }
+  }
+</script>
+{% endblock %}

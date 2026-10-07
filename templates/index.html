@@ -1,345 +1,487 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>STRIVE</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --bg: #f8fafc;
-        --card: #ffffff;
-        --text: #1e293b;
-        --primary: #3b82f6;
-        --border: #e2e8f0;
-        --nav: #0f172a;
-      }
-      body.dark-mode {
-        --bg: #020617;
-        --card: #1e293b;
-        --text: #f1f5f9;
-        --border: #334155;
-        --nav: #000000;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: sans-serif;
-        transition: 0.3s;
-        margin: 0;
-        padding-bottom: 50px;
-      }
-      .navbar {
-        background: var(--nav);
-        padding: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: white;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-      }
-      .container {
-        max-width: 600px;
-        margin: auto;
-        padding: 15px;
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        padding: 20px;
-        border-radius: 16px;
-        margin-bottom: 15px;
-      }
-      input {
-        width: 100%;
-        padding: 10px;
-        margin: 5px 0;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--card);
-        color: var(--text);
-        box-sizing: border-box;
-      }
-      .btn-p {
-        background: var(--primary);
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        width: 100%;
-      }
-      .water-btn {
-        background: #0ea5e9;
-        color: white;
-        border-radius: 8px;
-        padding: 8px 12px;
-        border: none;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .template-btn {
-        background: var(--card);
-        border: 1px solid var(--border);
-        padding: 10px;
-        border-radius: 10px;
-        cursor: pointer;
-        text-align: left;
-        width: 100%;
-        color: var(--text);
-      }
-      .food-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .stat-label {
-        font-size: 0.7rem;
-        color: #64748b;
-        text-transform: uppercase;
-        font-weight: bold;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <strong>STRIVE</strong>
-      <div style="display: flex; gap: 15px">
-        <button
-          onclick="toggleTheme()"
-          style="
-            background: none;
-            border: none;
-            color: #f59e0b;
-            cursor: pointer;
-          "
-        >
-          <i class="fas fa-moon" id="t-icon"></i>
-        </button>
-        <a href="/leaderboard" style="color: white; text-decoration: none"
-          ><i class="fas fa-users"></i
-        ></a>
-        <a href="/history" style="color: white; text-decoration: none"
-          ><i class="fas fa-calendar-alt"></i
-        ></a>
-        <a href="/logout" style="color: #ef4444; text-decoration: none"
-          ><i class="fas fa-sign-out-alt"></i
-        ></a>
-      </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container">
-      <div class="card">
-        <h3>Diet Templates</h3>
-        <div
-          style="
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 10px;
-          "
-        >
-          {% for t in templates %}
-          <form action="/add_food" method="POST">
-            <input type="hidden" name="template_id" value="{{ t.id }}" />
-            <button type="submit" class="template-btn">
-              <strong>{{ t.name }}</strong><br /><small
-                >{{ t.calories }} cal | {{ t.protein }}g</small
-              >
-            </button>
-          </form>
-          {% endfor %}
+{% block title %}Dashboard | STRIVE Fitness{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+  <!-- Hero Banner -->
+  <div class="card" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(139, 92, 246, 0.08) 100%); border-color: rgba(59, 130, 246, 0.25);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">
+          <i class="fa-solid fa-calendar-day"></i> Today's Overview
         </div>
-        <details>
-          <summary
-            style="cursor: pointer; color: var(--primary); font-weight: bold"
-          >
-            + Create Custom
-          </summary>
-          <form action="/save_template" method="POST" style="margin-top: 10px">
-            <input
-              type="text"
-              name="t_name"
-              placeholder="Meal Name (API query if empty cal)"
-              required
-            />
-            <div style="display: flex; gap: 5px">
-              <input type="number" name="t_cal" placeholder="Cal" /><input
-                type="number"
-                name="t_pro"
-                placeholder="Pro"
-              />
-            </div>
-            <button type="submit" class="btn-p" style="background: #10b981">
-              Save Template
-            </button>
-          </form>
-        </details>
+        <h1 style="font-size: 2rem; margin: 4px 0 6px;">Welcome back, {{ current_user.username }}!</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">
+          "Small daily disciplines repeated consistently lead to monumental transformations."
+        </p>
       </div>
 
-      <div class="card">
-        <h3>Daily Log 🥗</h3>
-        <form action="/add_food" method="POST" style="display: flex; gap: 5px">
-          <input
-            type="text"
-            name="name"
-            placeholder="e.g. 2 eggs"
-            required
-            style="flex: 3"
-          />
-          <button type="submit" class="btn-p" style="flex: 1">Add</button>
-        </form>
-        <div style="margin-top: 10px">
-          {% for item in food_log %}
-          <div class="food-item">
-            <span style="flex: 2">{{ item.n }}</span>
-            <span style="flex: 1; text-align: right"
-              ><strong>{{ item.c }}</strong>c |
-              <strong>{{ item.p }}</strong>g</span
-            >
-            <a
-              href="/delete_food/{{ loop.index0 }}"
-              style="color: #ef4444; margin-left: 10px"
-              ><i class="fas fa-trash-alt"></i
-            ></a>
-          </div>
-          {% endfor %}
-        </div>
-        <div
-          style="
-            margin-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            border-top: 2px solid var(--primary);
-            padding-top: 10px;
-          "
-        >
-          <div>
-            <span class="stat-label">Cals</span><br /><strong
-              >{{ totals.cal }}</strong
-            >
-          </div>
-          <div>
-            <span class="stat-label">Protein</span><br /><strong
-              >{{ totals.pro }}g</strong
-            >
-          </div>
-        </div>
-      </div>
+      <!-- Quick Target Tune Button -->
+      <button class="btn btn-outline" onclick="document.getElementById('targetModal').classList.toggle('open')" style="font-size: 0.88rem;">
+        <i class="fa-solid fa-sliders"></i> Customize Targets
+      </button>
+    </div>
 
-      <form action="/finish_day" method="POST">
-        <div class="card" style="text-align: center">
-          <span class="stat-label">Water (Liters)</span>
-          <div
-            style="
-              font-size: 2rem;
-              font-weight: 900;
-              color: #0ea5e9;
-              margin: 5px 0;
-            "
-          >
-            <span id="w-display">0.0</span> L
-          </div>
-          <div style="display: flex; justify-content: center; gap: 8px">
-            <button type="button" class="water-btn" onclick="addWater(0.25)">
-              +0.25L
-            </button>
-            <button type="button" class="water-btn" onclick="addWater(0.5)">
-              +0.5L
-            </button>
-            <button
-              type="button"
-              class="water-btn"
-              style="background: #ef4444"
-              onclick="resetWater()"
-            >
-              Reset
-            </button>
-          </div>
-          <input
-            type="hidden"
-            name="final_water"
-            id="hidden-water"
-            value="0.0"
-          />
+    <!-- Collapsible Goal Customizer -->
+    <div id="targetModal" style="display: none; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px dashed var(--card-border);">
+      <form action="{{ url_for('update_goals') }}" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: flex-end;">
+        <div>
+          <label class="form-label">Calorie Goal (kcal)</label>
+          <input type="number" name="calorie_goal" class="form-control" value="{{ current_user.calorie_goal or 2200 }}" required />
         </div>
-        <div class="card">
-          <label class="stat-label">Steps</label
-          ><input type="number" name="steps" placeholder="0" />
-          <label class="stat-label">Workout</label
-          ><input type="text" name="workout" placeholder="Session Name" />
-          <div
-            style="
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 15px;
-              margin-top: 10px;
-            "
-          >
-            <div>
-              <label class="stat-label">Intensity: <span id="iv">5</span></label
-              ><input
-                type="range"
-                name="intensity"
-                min="1"
-                max="10"
-                oninput="document.getElementById('iv').innerText=this.value"
-              />
-            </div>
-            <div>
-              <label class="stat-label">Sleep: <span id="sv">7.5</span>h</label
-              ><input
-                type="range"
-                name="sleep"
-                min="0"
-                max="12"
-                step="0.5"
-                value="7.5"
-                oninput="document.getElementById('sv').innerText=this.value"
-              />
-            </div>
-          </div>
+        <div>
+          <label class="form-label">Protein Goal (g)</label>
+          <input type="number" name="protein_goal" class="form-control" value="{{ current_user.protein_goal or 150 }}" required />
         </div>
-        <button
-          type="submit"
-          class="btn-p"
-          style="background: #10b981; padding: 20px; font-size: 1.1rem"
-        >
-          COMPLETE & POST
-        </button>
+        <div>
+          <label class="form-label">Step Goal</label>
+          <input type="number" name="steps_goal" class="form-control" value="{{ current_user.steps_goal or 10000 }}" required />
+        </div>
+        <div>
+          <label class="form-label">Water Goal (L)</label>
+          <input type="number" step="0.1" name="water_goal" class="form-control" value="{{ current_user.water_goal or 3.0 }}" required />
+        </div>
+        <button type="submit" class="btn btn-primary" style="height: 44px;">Save Targets</button>
       </form>
     </div>
-    <script>
-      function toggleTheme() {
-        document.body.classList.toggle("dark-mode");
-        const isD = document.body.classList.contains("dark-mode");
-        localStorage.setItem("theme", isD ? "dark" : "light");
-        document.getElementById("t-icon").className = isD
-          ? "fas fa-sun"
-          : "fas fa-moon";
-      }
-      if (localStorage.getItem("theme") === "dark") {
-        document.body.classList.add("dark-mode");
-        document.getElementById("t-icon").className = "fas fa-sun";
-      }
-      let water = 0.0;
-      function addWater(amt) {
-        water = parseFloat((water + amt).toFixed(2));
-        document.getElementById("w-display").innerText = water;
-        document.getElementById("hidden-water").value = water;
-      }
-      function resetWater() {
-        water = 0.0;
-        document.getElementById("w-display").innerText = "0.0";
-        document.getElementById("hidden-water").value = "0.0";
-      }
-    </script>
-  </body>
-</html>
+  </div>
+
+  <!-- Metric Rings / Target Progress Grid -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
+    <!-- Calories Card -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="form-label" style="margin: 0;">Calories Consumed</span>
+        <span class="badge badge-blue"><i class="fa-solid fa-fire"></i> Energy</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading);">{{ totals.cal }}</span>
+        <span style="color: var(--text-muted); font-size: 0.95rem;">/ {{ current_user.calorie_goal or 2200 }} kcal</span>
+      </div>
+      {% set cal_pct = [([((totals.cal / (current_user.calorie_goal or 2200)) * 100)|round|int, 100]|min), 0]|max %}
+      <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
+        <div style="background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; width: {{ cal_pct }}%; border-radius: 99px; transition: width 0.4s ease;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+        <span>{{ cal_pct }}% of goal</span>
+        <span>{{ [(current_user.calorie_goal or 2200) - totals.cal, 0]|max }} kcal left</span>
+      </div>
+    </div>
+
+    <!-- Protein Card -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="form-label" style="margin: 0;">Protein Intake</span>
+        <span class="badge badge-green"><i class="fa-solid fa-drumstick-bite"></i> Muscle</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading);">{{ totals.pro }}</span>
+        <span style="color: var(--text-muted); font-size: 0.95rem;">/ {{ current_user.protein_goal or 150 }}g</span>
+      </div>
+      {% set pro_pct = [([((totals.pro / (current_user.protein_goal or 150)) * 100)|round|int, 100]|min), 0]|max %}
+      <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
+        <div style="background: linear-gradient(90deg, #10b981, #34d399); height: 100%; width: {{ pro_pct }}%; border-radius: 99px; transition: width 0.4s ease;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+        <span>{{ pro_pct }}% of goal</span>
+        <span>{{ [((current_user.protein_goal or 150) - totals.pro)|round(1), 0]|max }}g left</span>
+      </div>
+    </div>
+
+    <!-- Water Card -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="form-label" style="margin: 0;">Hydration</span>
+        <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: #0284c7;"><i class="fa-solid fa-droplet"></i> Water</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading);" id="waterStatsDisplay">0.0</span>
+        <span style="color: var(--text-muted); font-size: 0.95rem;">/ {{ current_user.water_goal or 3.0 }} L</span>
+      </div>
+      <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
+        <div id="waterProgressBar" style="background: linear-gradient(90deg, #0ea5e9, #38bdf8); height: 100%; width: 0%; border-radius: 99px; transition: width 0.3s ease;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+        <span id="waterPctDisplay">0%</span>
+        <span>Target: {{ current_user.water_goal or 3.0 }}L</span>
+      </div>
+    </div>
+
+    <!-- Steps Target Card -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+        <span class="form-label" style="margin: 0;">Daily Steps</span>
+        <span class="badge badge-purple"><i class="fa-solid fa-person-walking"></i> Activity</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px;">
+        <span style="font-size: 2.2rem; font-weight: 800; font-family: var(--font-heading);" id="stepsPreviewDisplay">0</span>
+        <span style="color: var(--text-muted); font-size: 0.95rem;">/ {{ current_user.steps_goal or 10000 }} steps</span>
+      </div>
+      <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
+        <div id="stepsProgressBar" style="background: linear-gradient(90deg, #8b5cf6, #a78bfa); height: 100%; width: 0%; border-radius: 99px; transition: width 0.3s ease;"></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+        <span id="stepsPctDisplay">0%</span>
+        <span>Keep moving!</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main 2-Column Content Layout -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="dashboard-grid">
+    
+    <!-- LEFT COLUMN: Food & Meal Management -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Diet Templates Section -->
+      <div class="card">
+        <div class="card-header-clean">
+          <div class="card-title-clean">
+            <i class="fa-solid fa-bookmark" style="color: var(--primary);"></i>
+            Saved Diet Templates
+          </div>
+          <button class="btn btn-outline" style="padding: 4px 10px; font-size: 0.8rem;" onclick="toggleCustomTemplate()">
+            <i class="fa-solid fa-plus"></i> New Template
+          </button>
+        </div>
+
+        {% if templates %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
+          {% for t in templates %}
+          <div style="background: var(--bg-subtle); border: 1px solid var(--card-border); border-radius: 12px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.92rem; margin-bottom: 2px;">{{ t.name }}</div>
+              <div style="font-size: 0.78rem; color: var(--text-muted);">{{ t.calories }} kcal &bull; {{ t.protein }}g pro</div>
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <form action="{{ url_for('add_food') }}" method="POST" style="flex: 1;">
+                <input type="hidden" name="template_id" value="{{ t.id }}" />
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 5px 8px; font-size: 0.8rem;">
+                  <i class="fa-solid fa-plus"></i> Add
+                </button>
+              </form>
+              <form action="{{ url_for('delete_template', template_id=t.id) }}" method="POST" onsubmit="return confirm('Delete template?')">
+                <button type="submit" class="btn btn-danger" style="padding: 5px 8px; font-size: 0.8rem;" title="Delete Template">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+          No templates saved yet. Create reusable templates (e.g., "Protein Shake", "Chicken Rice Bowl") for instant logging.
+        </p>
+        {% endif %}
+
+        <!-- Custom Template Creator Form -->
+        <div id="createTemplateForm" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--card-border);">
+          <form action="{{ url_for('save_template') }}" method="POST">
+            <div class="form-group">
+              <label class="form-label">Template Meal Name</label>
+              <input type="text" name="t_name" class="form-control" placeholder="e.g. Oatmeal & Peanut Butter" required />
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" class="form-group">
+              <div>
+                <label class="form-label">Calories (kcal)</label>
+                <input type="number" name="t_cal" class="form-control" placeholder="Leave empty for auto-search" />
+              </div>
+              <div>
+                <label class="form-label">Protein (g)</label>
+                <input type="number" step="0.1" name="t_pro" class="form-control" placeholder="Leave empty for auto-search" />
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" class="btn btn-success" style="flex: 1;">Save Meal Template</button>
+              <button type="button" class="btn btn-outline" onclick="toggleCustomTemplate()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Add Meal & Daily Food Log Section -->
+      <div class="card">
+        <div class="card-header-clean">
+          <div class="card-title-clean">
+            <i class="fa-solid fa-utensils" style="color: var(--success);"></i>
+            Daily Food Tracker
+          </div>
+          {% if food_log %}
+          <form action="{{ url_for('clear_food') }}" method="POST" onsubmit="return confirm('Clear today\'s food log?');">
+            <button type="submit" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.78rem; color: #ef4444;">
+              <i class="fa-solid fa-rotate-left"></i> Clear Log
+            </button>
+          </form>
+          {% endif %}
+        </div>
+
+        <!-- Food Add Form -->
+        <form action="{{ url_for('add_food') }}" method="POST" style="margin-bottom: 1.25rem;">
+          <div style="display: flex; gap: 8px;">
+            <input type="text" name="name" class="form-control" placeholder="Search food (e.g., '2 eggs', 'chicken breast', 'oats')" required style="flex: 1;" />
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
+          </div>
+
+          <!-- Optional manual macros toggle -->
+          <div style="margin-top: 8px;">
+            <a href="javascript:void(0)" onclick="toggleManualMacros()" style="font-size: 0.8rem; color: var(--primary); text-decoration: none;">
+              <i class="fa-solid fa-sliders"></i> <span id="manualToggleText">+ Specify Custom Calories/Protein</span>
+            </a>
+            <div id="manualMacrosBox" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
+              <input type="number" name="manual_cal" class="form-control" placeholder="Custom Calories (kcal)" />
+              <input type="number" step="0.1" name="manual_pro" class="form-control" placeholder="Custom Protein (g)" />
+            </div>
+          </div>
+        </form>
+
+        <!-- Food List -->
+        {% if food_log %}
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          {% for item in food_log %}
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-subtle); border-radius: 10px; border: 1px solid var(--card-border);">
+            <div>
+              <div style="font-weight: 600; font-size: 0.95rem;">{{ item.n }}</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 2px;">
+                <span style="color: var(--primary); font-weight: 600;">{{ item.c }}</span> kcal &bull;
+                <span style="color: var(--success); font-weight: 600;">{{ item.p }}g</span> protein
+              </div>
+            </div>
+            <a href="{{ url_for('delete_food', index=loop.index0) }}" class="btn btn-danger" style="padding: 6px 10px; font-size: 0.8rem;" title="Remove Item">
+              <i class="fa-solid fa-trash-can"></i>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Food Totals Row -->
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-weight: 700; font-size: 0.95rem;">Total Today:</span>
+          <div style="display: flex; gap: 1rem;">
+            <span><strong>{{ totals.cal }}</strong> kcal</span>
+            <span><strong style="color: var(--success);">{{ totals.pro }}g</strong> protein</span>
+          </div>
+        </div>
+        {% else %}
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+          <i class="fa-solid fa-bowl-food" style="font-size: 2.5rem; opacity: 0.4; margin-bottom: 0.5rem;"></i>
+          <p style="font-size: 0.92rem; margin: 0;">No foods logged yet today. Add meals above to track your fuel.</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Interactive Water & Daily Check-in -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      
+      <!-- Water Tracker Card -->
+      <div class="card" style="text-align: center;">
+        <div class="card-header-clean" style="justify-content: center; margin-bottom: 0.5rem;">
+          <div class="card-title-clean">
+            <i class="fa-solid fa-faucet-drip" style="color: #0ea5e9;"></i>
+            Hydration Station
+          </div>
+        </div>
+        
+        <div style="font-size: 2.75rem; font-weight: 900; font-family: var(--font-heading); color: #0ea5e9; margin: 4px 0;">
+          <span id="waterDisplay">0.0</span> <span style="font-size: 1.25rem; font-weight: 600; color: var(--text-muted);">L</span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">
+          Target: {{ current_user.water_goal or 3.0 }} Liters / day
+        </p>
+
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;">
+          <button type="button" class="btn btn-outline" onclick="addWater(0.25)" style="border-color: #0ea5e9; color: #0284c7;">
+            <i class="fa-solid fa-glass-water"></i> +0.25 L
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addWater(0.50)" style="border-color: #0ea5e9; color: #0284c7;">
+            <i class="fa-solid fa-bottle-water"></i> +0.50 L
+          </button>
+          <button type="button" class="btn btn-outline" onclick="addWater(0.75)" style="border-color: #0ea5e9; color: #0284c7;">
+            <i class="fa-solid fa-flask"></i> +0.75 L
+          </button>
+          <button type="button" class="btn btn-danger" onclick="resetWater()" style="padding: 10px 14px;">
+            <i class="fa-solid fa-rotate-left"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Complete Daily Workout & Habit Check-in Card -->
+      <div class="card">
+        <div class="card-header-clean">
+          <div class="card-title-clean">
+            <i class="fa-solid fa-clipboard-check" style="color: var(--primary);"></i>
+            Daily Check-in & Workout Record
+          </div>
+        </div>
+
+        <form action="{{ url_for('finish_day') }}" method="POST" id="finishDayForm">
+          <!-- Hidden Water Sync -->
+          <input type="hidden" name="final_water" id="hiddenWater" value="0.0" />
+
+          <!-- Steps Input -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-person-walking"></i> Step Count</label>
+            <input type="number" name="steps" id="stepsInput" class="form-control" placeholder="e.g. 10450" oninput="updateStepsDisplay(this.value)" />
+          </div>
+
+          <!-- Workout Name & Quick Tags -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-dumbbell"></i> Workout / Training Session</label>
+            <input type="text" name="workout" id="workoutInput" class="form-control" placeholder="e.g. Push Day & 20m Incline Walk" value="Active Training" required />
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+              <span class="badge badge-blue" style="cursor: pointer;" onclick="setWorkout('Push Day (Chest/Delts)')">Push Day</span>
+              <span class="badge badge-green" style="cursor: pointer;" onclick="setWorkout('Pull Day (Back/Biceps)')">Pull Day</span>
+              <span class="badge badge-yellow" style="cursor: pointer;" onclick="setWorkout('Leg Day (Squats/Quads)')">Leg Day</span>
+              <span class="badge badge-purple" style="cursor: pointer;" onclick="setWorkout('5K Run / Cardio')">5K Run</span>
+              <span class="badge" style="background: rgba(148, 163, 184, 0.15); color: var(--text-muted); cursor: pointer;" onclick="setWorkout('Rest & Active Recovery')">Rest Day</span>
+            </div>
+          </div>
+
+          <!-- Dual Sliders: Intensity & Sleep -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" class="form-group">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" style="margin: 0;">Intensity</label>
+                <span id="intensityBadge" class="badge badge-blue">5/10 (Moderate)</span>
+              </div>
+              <input type="range" name="intensity" min="1" max="10" value="5" class="form-control" style="padding: 4px;" oninput="updateIntensity(this.value)" />
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label class="form-label" style="margin: 0;">Sleep</label>
+                <span id="sleepBadge" class="badge badge-purple">7.5 hrs</span>
+              </div>
+              <input type="range" name="sleep" min="0" max="14" step="0.5" value="7.5" class="form-control" style="padding: 4px;" oninput="updateSleep(this.value)" />
+            </div>
+          </div>
+
+          <!-- Weight Input (Critical for Progress Tracking!) -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-weight-scale"></i> Body Weight (kg)</label>
+            <input type="number" step="0.1" name="weight" class="form-control" placeholder="e.g. 72.5" value="{{ latest_log.weight if latest_log else 70.0 }}" required />
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-comment-dots"></i> Daily Reflection / Notes (Optional)</label>
+            <input type="text" name="notes" class="form-control" placeholder="e.g. Hit a new bench PR, felt high energy!" />
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn btn-success" style="width: 100%; padding: 14px; font-size: 1.1rem; margin-top: 0.5rem;">
+            <i class="fa-solid fa-circle-check"></i> Complete & Post Today's Record
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Water Tracker
+  let currentWater = 0.0;
+  const targetWater = {{ current_user.water_goal or 3.0 }};
+
+  function addWater(amount) {
+    currentWater = parseFloat((currentWater + amount).toFixed(2));
+    syncWater();
+  }
+
+  function resetWater() {
+    currentWater = 0.0;
+    syncWater();
+  }
+
+  function syncWater() {
+    document.getElementById('waterDisplay').innerText = currentWater.toFixed(2);
+    document.getElementById('waterStatsDisplay').innerText = currentWater.toFixed(1);
+    document.getElementById('hiddenWater').value = currentWater.toFixed(2);
+    
+    const pct = Math.min(Math.round((currentWater / targetWater) * 100), 100);
+    document.getElementById('waterProgressBar').style.width = pct + '%';
+    document.getElementById('waterPctDisplay').innerText = pct + '% of goal';
+  }
+
+  // Steps Sync
+  const stepsTarget = {{ current_user.steps_goal or 10000 }};
+  function updateStepsDisplay(val) {
+    const num = parseInt(val) || 0;
+    document.getElementById('stepsPreviewDisplay').innerText = num.toLocaleString();
+    const pct = Math.min(Math.round((num / stepsTarget) * 100), 100);
+    document.getElementById('stepsProgressBar').style.width = pct + '%';
+    document.getElementById('stepsPctDisplay').innerText = pct + '% of goal';
+  }
+
+  // Workout tag helper
+  function setWorkout(name) {
+    document.getElementById('workoutInput').value = name;
+  }
+
+  // Intensity slider label
+  function updateIntensity(val) {
+    const badge = document.getElementById('intensityBadge');
+    let text = `${val}/10 `;
+    if (val <= 3) {
+      text += '(Light)';
+      badge.className = 'badge badge-blue';
+    } else if (val <= 6) {
+      text += '(Moderate)';
+      badge.className = 'badge badge-green';
+    } else if (val <= 8) {
+      text += '(Hardcore)';
+      badge.className = 'badge badge-yellow';
+    } else {
+      text += '(Beast Mode 🔥)';
+      badge.className = 'badge badge-purple';
+    }
+    badge.innerText = text;
+  }
+
+  // Sleep slider label
+  function updateSleep(val) {
+    document.getElementById('sleepBadge').innerText = `${val} hrs`;
+  }
+
+  // Toggle helpers
+  function toggleCustomTemplate() {
+    const f = document.getElementById('createTemplateForm');
+    f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  }
+
+  function toggleManualMacros() {
+    const box = document.getElementById('manualMacrosBox');
+    const txt = document.getElementById('manualToggleText');
+    if (box.style.display === 'none') {
+      box.style.display = 'grid';
+      txt.innerText = '- Hide Custom Macros';
+    } else {
+      box.style.display = 'none';
+      txt.innerText = '+ Specify Custom Calories/Protein';
+    }
+  }
+
+  // Check URL params for workout prefill from Training Lab
+  const urlParams = new URLSearchParams(window.location.search);
+  const workoutParam = urlParams.get('workout');
+  if (workoutParam) {
+    setWorkout(decodeURIComponent(workoutParam));
+  }
+</script>
+
+<style>
+  @media (max-width: 868px) {
+    .dashboard-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,101 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>STRIVE | Fitness</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --primary: #3b82f6;
-        --dark: #0f172a;
-        --bg: #f8fafc;
-      }
-      body {
-        font-family: "Inter", sans-serif;
-        background: var(--bg);
-        margin: 0;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}STRIVE | Next-Gen Fitness & Nutrition Tracker{% endblock %}</title>
+  <meta name="description" content="STRIVE is your all-in-one daily fitness, macro, training, and habit tracker." />
+  
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="navbar" id="mainNavbar">
+    <div class="nav-container">
+      <a href="{{ url_for('home') }}" class="nav-brand" id="brandLink">
+        <div class="brand-icon"><i class="fa-solid fa-bolt"></i></div>
+        <span>STRIVE</span>
+      </a>
 
-      /* Nav Bar Styling */
-      .navbar {
-        background: var(--dark);
-        padding: 1rem 10%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 100;
-      }
-      .nav-brand {
-        color: white;
-        font-size: 1.5rem;
-        font-weight: 800;
-        text-decoration: none;
-      }
-      .nav-links {
-        display: flex;
-        gap: 2rem;
-      }
-      .nav-links a {
-        color: #94a3b8;
-        text-decoration: none;
-        font-weight: 500;
-        transition: 0.3s;
-      }
-      .nav-links a:hover,
-      .nav-links a.active {
-        color: white;
-      }
+      {% if current_user.is_authenticated %}
+      <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
 
-      .container {
-        max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-      }
-      .card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 1.5rem;
-      }
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        border: none;
-        cursor: pointer;
-        font-weight: bold;
-        text-decoration: none;
-        display: inline-block;
-      }
-      .btn-blue {
-        background: var(--primary);
-        color: white;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar">
-      <a href="/" class="nav-brand">STRIVE</a>
-      <div class="nav-links">
-        <a href="/"><i class="fa-solid fa-house"></i> Dashboard</a>
-        <a href="/history"><i class="fa-solid fa-calendar-days"></i> History</a>
-        <a href="/progress"><i class="fa-solid fa-chart-line"></i> Progress</a>
-        <a href="/training"
-          ><i class="fa-solid fa-dumbbell"></i> Training Lab</a
-        >
+      <ul class="nav-menu" id="navMenu">
+        <li>
+          <a href="{{ url_for('home') }}" class="nav-link {% if request.endpoint == 'home' %}active{% endif %}" id="navHome">
+            <i class="fa-solid fa-chart-pie"></i> Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('training') }}" class="nav-link {% if request.endpoint == 'training' %}active{% endif %}" id="navTraining">
+            <i class="fa-solid fa-dumbbell"></i> Training Lab
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('progress') }}" class="nav-link {% if request.endpoint == 'progress' %}active{% endif %}" id="navProgress">
+            <i class="fa-solid fa-chart-line"></i> Progress
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('history') }}" class="nav-link {% if request.endpoint == 'history' %}active{% endif %}" id="navHistory">
+            <i class="fa-solid fa-clock-rotate-left"></i> History
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('leaderboard') }}" class="nav-link {% if request.endpoint == 'leaderboard' %}active{% endif %}" id="navLeaderboard">
+            <i class="fa-solid fa-trophy"></i> Feed
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="user-badge" id="userBadge" title="Logged in as {{ current_user.username }}">
+          <div class="avatar-circle">{{ current_user.username[:1].upper() }}</div>
+          <span>{{ current_user.username }}</span>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn-logout" id="logoutBtn" title="Log Out">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        </a>
       </div>
-      <a
-        href="/logout"
-        style="color: #ef4444; text-decoration: none; font-size: 0.9rem"
-        >Logout</a
-      >
-    </nav>
+      {% else %}
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Switch Light/Dark Mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+        <a href="{{ url_for('login') }}" class="nav-link">Log In</a>
+        <a href="{{ url_for('signup') }}" class="btn btn-primary" style="padding: 6px 16px; font-size: 0.88rem;">Sign Up</a>
+      </div>
+      {% endif %}
+    </div>
+  </nav>
 
-    <div class="container">{% block content %}{% endblock %}</div>
-  </body>
+  <!-- Main Content Container -->
+  <main class="main-wrapper">
+    <!-- Flash Notifications -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-container" id="flashContainer">
+        {% for category, message in messages %}
+        <div class="flash-toast {{ category }}">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            {% if category == 'success' %}
+              <i class="fa-solid fa-circle-check"></i>
+            {% elif category == 'danger' %}
+              <i class="fa-solid fa-circle-exclamation"></i>
+            {% elif category == 'warning' %}
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            {% else %}
+              <i class="fa-solid fa-circle-info"></i>
+            {% endif %}
+            <span>{{ message }}</span>
+          </div>
+          <button class="flash-close-btn" onclick="this.parentElement.remove()">&times;</button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span style="font-weight: 800; font-family: var(--font-heading); color: var(--primary);">STRIVE</span>
+        <span>&bull; Fuel your daily momentum</span>
+      </div>
+      <div style="font-size: 0.82rem;">
+        &copy; 2026 STRIVE Fitness Platform &bull; Made with passion
+      </div>
+    </div>
+  </footer>
+
+  <!-- Theme & Interactions Script -->
+  <script>
+    // Initialize Theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('strive_theme') || 'dark';
+      const icon = document.getElementById('themeIcon');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        if (icon) icon.className = 'fa-solid fa-sun';
+      } else {
+        document.body.classList.remove('dark-mode');
+        if (icon) icon.className = 'fa-solid fa-moon';
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.toggle('dark-mode');
+      localStorage.setItem('strive_theme', isDark ? 'dark' : 'light');
+      const icon = document.getElementById('themeIcon');
+      if (icon) {
+        icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+    }
+
+    // Mobile Navbar toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('navMenu');
+    if (mobileBtn && navMenu) {
+      mobileBtn.addEventListener('click', () => {
+        navMenu.classList.toggle('open');
+      });
+    }
+
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(() => {
+      const toasts = document.querySelectorAll('.flash-toast');
+      toasts.forEach(toast => {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+        setTimeout(() => toast.remove(), 400);
+      });
+    }, 5000);
+
+    initTheme();
+  </script>
+
+  {% block extra_scripts %}{% endblock %}
+</body>
 </html>
