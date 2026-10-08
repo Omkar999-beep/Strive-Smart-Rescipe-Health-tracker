@@ -62,7 +62,7 @@
       </div>
       {% set cal_pct = [([((totals.cal / (current_user.calorie_goal or 2200)) * 100)|round|int, 100]|min), 0]|max %}
       <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
-        <div style="background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; width: {{ cal_pct }}%; border-radius: 99px; transition: width 0.4s ease;"></div>
+        <div id="calProgressBar" style="background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; border-radius: 99px; transition: width 0.4s ease;"></div>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
         <span>{{ cal_pct }}% of goal</span>
@@ -82,7 +82,7 @@
       </div>
       {% set pro_pct = [([((totals.pro / (current_user.protein_goal or 150)) * 100)|round|int, 100]|min), 0]|max %}
       <div style="background: var(--bg-subtle); height: 8px; border-radius: 99px; overflow: hidden; margin: 12px 0 6px;">
-        <div style="background: linear-gradient(90deg, #10b981, #34d399); height: 100%; width: {{ pro_pct }}%; border-radius: 99px; transition: width 0.4s ease;"></div>
+        <div id="proteinProgressBar" style="background: linear-gradient(90deg, #10b981, #34d399); height: 100%; border-radius: 99px; transition: width 0.4s ease;"></div>
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
         <span>{{ pro_pct }}% of goal</span>
@@ -389,7 +389,7 @@
 <script>
   // Water Tracker
   let currentWater = 0.0;
-  const targetWater = {{ current_user.water_goal or 3.0 }};
+  const caloriesGoal = {{ (current_user.calorie_goal or 2000) | tojson }};
 
   function addWater(amount) {
     currentWater = parseFloat((currentWater + amount).toFixed(2));
@@ -412,7 +412,7 @@
   }
 
   // Steps Sync
-  const stepsTarget = {{ current_user.steps_goal or 10000 }};
+  const waterGoal = {{ (current_user.water_goal or 3.0) | tojson }};
   function updateStepsDisplay(val) {
     const num = parseInt(val) || 0;
     document.getElementById('stepsPreviewDisplay').innerText = num.toLocaleString();
