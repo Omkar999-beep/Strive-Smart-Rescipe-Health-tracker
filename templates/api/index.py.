@@ -1,0 +1,9 @@
+from app import app
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
+}
